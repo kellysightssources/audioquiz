@@ -21,54 +21,35 @@ import glob
 # 8. play until quit, or configurable number of songs
 # 9. grouping? play multiple songs by artist or multiple songs from same anime
 
-dir = 'quiz'
+dir = 'C:\Projects\kpt\python\songs'
 song_list = next(os.walk(dir))[2]
 song_list_shuffle = random.sample(song_list, len(song_list))
-current_segment = None
 
-keep_going = True
-count = 0
-while keep_going and count < len(song_list_shuffle):
-    song = AudioSegment.from_mp3(os.path.join(dir, song_list_shuffle[count]))
-    duration = song.duration_seconds
-    rand_beginning = random.randint(0, int(song.duration_seconds) - 20)
-    rand_end = rand_beginning + 5
-    current_segment = song[rand_beginning*1000:rand_end*1000]
-    play(current_segment)
-    print("Another? " + str(len(song_list) - (count + 1)) + " songs remain. y/n")
-    count = count + 1
-    if count < len(song_list_shuffle):
-        answer = input()
-    while answer == 'n':
-        play(current_segment)
-        print("Another? " + str(len(song_list) - (count + 1)) + " songs remain. y/n")
-        answer = input()
-    keep_going = True if answer == 'y' else False
-
-def play_segment():
-    play(current_segment)
+def play_segment(segment):
+    play(segment)
 
 def get_new_segment(song):
     duration = song.duration_seconds
     rand_beginning = random.randint(0, int(song.duration_seconds) - 20)
     rand_end = rand_beginning + 5
-    current_segment = song[rand_beginning*1000:rand_end*1000]
+    return song[rand_beginning*1000:rand_end*1000]
 
 def set_current_song(list, index):
-    song = AudioSegment.from_mp3(os.path.join(dir, list[count]))
+    song = AudioSegment.from_mp3(os.path.join(dir, list[index]))
+    return song
 
 # define our clear function 
 def clear(): 
     # for windows 
-    if name == 'nt': 
-         = system('cls') 
+    if os.name == 'nt': 
+        _ = os.system('cls') 
     # for mac and linux(here, os.name is 'posix') 
     else: 
-         = system('clear') 
+        _ = os.system('clear') 
 
-def DisplayMenu():
+def display_menu():
     clear()
-    print("            Song " + (count + 1) + " / " + str(len(song_list)))
+    print("            Song " + str(count + 1) + " / " + str(len(song_list)))
     print()
     print("  A) Replay")
     print("  Y) Correct")
@@ -77,8 +58,24 @@ def DisplayMenu():
     print("")
     print("Enter Input: ")
 
-def Correct():
+def correct():
     score = score + 1
 
-def Quit():
+def quit():
     keep_going = False
+
+keep_going = True
+count = 0
+while keep_going and count < len(song_list_shuffle):
+    song = set_current_song(song_list_shuffle, count)
+    current_segment = get_new_segment(song)
+    play_segment(current_segment)
+    display_menu()
+    count = count + 1
+    if count < len(song_list_shuffle):
+        answer = input()
+    while answer == 'n':
+        play_segment()
+        display_menu()
+        answer = input()
+    keep_going = True if answer == 'y' else False
