@@ -24,6 +24,8 @@ import glob
 dir = 'C:\Projects\kpt\python\songs'
 song_list = next(os.walk(dir))[2]
 song_list_shuffle = random.sample(song_list, len(song_list))
+keep_going = True
+count = 0
 
 def play_segment(segment):
     play(segment)
@@ -47,35 +49,44 @@ def clear():
     else: 
         _ = os.system('clear') 
 
-def display_menu():
+def display_menu(segment):
     clear()
-    print("            Song " + str(count + 1) + " / " + str(len(song_list)))
+    print("            Audio Quiz")
     print()
-    print("  A) Replay")
+    print("Song " + str(count + 1) + " / " + str(len(song_list)))
+    print()
+    print("  A) Play Again")
     print("  Y) Correct")
     print("  N) Incorrect")
     print("  Q) Quit")
     print("")
     print("Enter Input: ")
+    answer = input()
+    if answer == 'y' or answer == 'Y':
+        correct()
+    elif answer == 'a' or answer == 'A':
+        play_segment(segment)
+    elif answer == 'q' or answer == 'Q':
+        quit()
 
 def correct():
+    global score
     score = score + 1
 
 def quit():
+    global keep_going
     keep_going = False
 
-keep_going = True
-count = 0
 while keep_going and count < len(song_list_shuffle):
     song = set_current_song(song_list_shuffle, count)
     current_segment = get_new_segment(song)
     play_segment(current_segment)
-    display_menu()
-    count = count + 1
-    if count < len(song_list_shuffle):
-        answer = input()
-    while answer == 'n':
-        play_segment()
-        display_menu()
-        answer = input()
-    keep_going = True if answer == 'y' else False
+    display_menu(current_segment)
+    # count = count + 1
+    # if count < len(song_list_shuffle):
+    #     answer = input()
+    # while answer == 'n':
+    #     play_segment(current_segment)
+    #     display_menu()
+    #     answer = input()
+    # keep_going = True if answer == 'y' or answer == 'Y' else False
